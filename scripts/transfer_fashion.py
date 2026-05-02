@@ -374,7 +374,7 @@ def parse_args():
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.001
+        default=0.01
     )
 
     parser.add_argument(

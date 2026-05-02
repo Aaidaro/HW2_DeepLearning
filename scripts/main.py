@@ -50,7 +50,20 @@ def parse_args():
     parser.add_argument(
         "--lr",
         type=float,
-        default=0.001
+        default=0.01
+    )
+
+    parser.add_argument(
+        "--optimizer",
+        type=str,
+        default="sgd",
+        choices=["adam", "sgd"]
+    )
+
+    parser.add_argument(
+        "--momentum",
+        type=float,
+        default=0.9
     )
 
     parser.add_argument(
@@ -159,11 +172,20 @@ def main():
 
     criterion = nn.CrossEntropyLoss()
 
-    optimizer = optim.Adam(
-        model.parameters(),
-        lr=args.lr,
-        weight_decay=args.weight_decay
-    )
+    if args.optimizer == "adam":
+        optimizer = optim.Adam(
+            model.parameters(),
+            lr=args.lr,
+            weight_decay=args.weight_decay
+        )
+
+    elif args.optimizer == "sgd":
+        optimizer = optim.SGD(
+            model.parameters(),
+            lr=args.lr,
+            momentum=args.momentum,
+            weight_decay=args.weight_decay
+        )
 
     history = train_model(
         model=model,
