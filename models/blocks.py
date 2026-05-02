@@ -193,7 +193,7 @@ class ResNeXtBlockC(nn.Module):
         self,
         in_channels,
         out_channels,
-        groups=4 ,
+        groups=8 ,
         bottleneck_ratio=0.5
     ):
         super().__init__()
