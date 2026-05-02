@@ -27,4 +27,4 @@ homework_code/
 ## Local smoke test
 
 From the project root:
-python -m scripts.main --epochs 1 --batch-size 128 --num-workers 0 --block A
+python -m scripts.main --epochs 50 --batch-size 128 --num-workers 0 --block A

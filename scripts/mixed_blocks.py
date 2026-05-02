@@ -67,7 +67,7 @@ def main():
     output_dir = PROJECT_ROOT / "outputs"
     plot_dir = output_dir / "plots" / f"mixed_{sequence}"
     log_dir = output_dir / "logs"
-    save_dir = PROJECT_ROOT / "saved_models"
+    save_dir = PROJECT_ROOT / "models/saved_models"
 
     os.makedirs(plot_dir, exist_ok=True)
     os.makedirs(log_dir, exist_ok=True)

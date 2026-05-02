@@ -356,7 +356,7 @@ def parse_args():
     parser.add_argument(
         "--pretrained-path",
         type=str,
-        default="saved_models/best_model_block_C.pth"
+        default="models/saved_models/best_model_block_C.pth"
     )
 
     parser.add_argument(
