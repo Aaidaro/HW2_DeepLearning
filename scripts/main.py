@@ -80,7 +80,7 @@ def parse_args():
     parser.add_argument(
         "--save-dir",
         type=str,
-        default="/models/saved_models"
+        default="models/saved_models"
     )
 
     parser.add_argument(

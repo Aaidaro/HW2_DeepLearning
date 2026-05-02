@@ -1,5 +1,5 @@
 data:
   path: "data/dataset/mnist.pkl.gz"
-  batch_size: 64
+  batch_size: 128
   num_workers: 2
   use_augmentation: true
