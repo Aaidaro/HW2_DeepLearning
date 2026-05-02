@@ -1,0 +1,2 @@
+Block Sequence: CBC
+Test Loss: 0.0157 | Test Acc: 0.9944

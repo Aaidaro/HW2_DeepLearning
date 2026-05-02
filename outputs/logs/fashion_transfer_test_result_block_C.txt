@@ -1,0 +1,1 @@
+Final Test Loss: 0.6906 | Final Test Acc: 0.7509

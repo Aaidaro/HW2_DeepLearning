@@ -1,0 +1,2 @@
+Block Sequence: BCC
+Test Loss: 0.0235 | Test Acc: 0.9927
