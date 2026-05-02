@@ -88,8 +88,108 @@ class PersianMNISTCNN(nn.Module):
             nn.AdaptiveAvgPool2d((1, 1))
         )
 
-        # Do not use Softmax here.
         # CrossEntropyLoss expects raw logits.
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Dropout(p=dropout_rate),
+            nn.Linear(256, num_classes)
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
+    
+
+class MixedPersianMNISTCNN(nn.Module):
+    """
+    CNN architecture with mixed special blocks.
+
+    block_sequence examples:
+        "CCC"
+        "CBC"
+        "CAC"
+        "BCC"
+
+    The three letters correspond to the three special block positions.
+    """
+
+    def __init__(
+        self,
+        num_classes=10,
+        block_sequence="CBC",
+        dropout_rate=0.2,
+        groups=8,
+        bottleneck_ratio=0.5
+    ):
+        super().__init__()
+
+        if len(block_sequence) != 3:
+            raise ValueError("block_sequence must have exactly 3 letters, e.g. CBC")
+
+        for block in block_sequence:
+            if block not in ["A", "B", "C"]:
+                raise ValueError("Each block must be A, B, or C.")
+
+        self.block_sequence = block_sequence
+
+        def make_block(block_type, in_channels, out_channels):
+            if block_type == "A":
+                return ResidualBlockA(in_channels, out_channels)
+
+            if block_type == "B":
+                return InceptionBlockB(in_channels, out_channels)
+
+            if block_type == "C":
+                return ResNeXtBlockC(
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    groups=groups,
+                    bottleneck_ratio=bottleneck_ratio
+                )
+
+        b1, b2, b3 = block_sequence
+
+        self.features = nn.Sequential(
+            ConvBNReLU(
+                in_channels=1,
+                out_channels=32,
+                kernel_size=3,
+                padding=1
+            ),
+
+            ConvBNReLU(
+                in_channels=32,
+                out_channels=64,
+                kernel_size=3,
+                padding=1
+            ),
+
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            # Special Block 1: 64 -> 64
+            make_block(b1, 64, 64),
+
+            # Special Block 2: 64 -> 128
+            make_block(b2, 64, 128),
+
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            ConvBNReLU(
+                in_channels=128,
+                out_channels=256,
+                kernel_size=3,
+                padding=1
+            ),
+
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            # Special Block 3: 256 -> 256
+            make_block(b3, 256, 256),
+
+            nn.AdaptiveAvgPool2d((1, 1))
+        )
+
         self.classifier = nn.Sequential(
             nn.Flatten(),
             nn.Dropout(p=dropout_rate),

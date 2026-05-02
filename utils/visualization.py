@@ -133,3 +133,68 @@ def plot_first_conv_feature_maps(
     plt.close()
 
     print(f"Saved first conv feature maps to: {save_path}")
+
+
+def compute_confusion_matrix(model, data_loader, device, num_classes=10):
+    model.eval()
+
+    confusion_matrix = torch.zeros(num_classes, num_classes, dtype=torch.int64)
+
+    with torch.no_grad():
+        for images, labels in data_loader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            _, predictions = torch.max(outputs, dim=1)
+
+            for true_label, predicted_label in zip(labels, predictions):
+                confusion_matrix[true_label, predicted_label] += 1
+
+    return confusion_matrix.cpu().numpy()
+
+
+def plot_confusion_matrix(
+    confusion_matrix,
+    save_dir,
+    class_names=None,
+    filename="confusion_matrix.png"
+):
+    os.makedirs(save_dir, exist_ok=True)
+
+    if class_names is None:
+        class_names = [str(i) for i in range(confusion_matrix.shape[0])]
+
+    plt.figure(figsize=(9, 7))
+    plt.imshow(confusion_matrix, interpolation="nearest", cmap="Blues")
+    plt.title("Confusion Matrix on Test Set")
+    plt.colorbar()
+
+    tick_marks = range(len(class_names))
+    plt.xticks(tick_marks, class_names)
+    plt.yticks(tick_marks, class_names)
+
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
+
+    threshold = confusion_matrix.max() / 2.0
+
+    for i in range(confusion_matrix.shape[0]):
+        for j in range(confusion_matrix.shape[1]):
+            value = confusion_matrix[i, j]
+            plt.text(
+                j,
+                i,
+                str(value),
+                ha="center",
+                va="center",
+                color="white" if value > threshold else "black"
+            )
+
+    plt.tight_layout()
+
+    save_path = os.path.join(save_dir, filename)
+    plt.savefig(save_path)
+    plt.close()
+
+    print(f"Saved confusion matrix to: {save_path}")
