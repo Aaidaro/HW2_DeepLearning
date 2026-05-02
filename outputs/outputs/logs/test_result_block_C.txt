@@ -1,0 +1,1 @@
+Test Loss: 0.0215 | Test Acc: 0.9938
